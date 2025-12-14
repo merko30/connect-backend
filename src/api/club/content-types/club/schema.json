@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "clubs",
+  "info": {
+    "singularName": "club",
+    "pluralName": "clubs",
+    "displayName": "Club",
+    "description": "Football club"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true,
+      "unique": true
+    },
+
+    "clubName": {
+      "type": "string",
+      "required": true
+    },
+
+    "country": {
+      "type": "string",
+      "required": true
+    },
+
+    "city": {
+      "type": "string"
+    },
+
+    "league": {
+      "type": "string"
+    },
+
+    "level": {
+      "type": "enumeration",
+      "enum": ["amateur", "semi-pro", "pro"],
+      "required": true
+    },
+
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+
+    "website": {
+      "type": "string"
+    },
+
+    "contactEmail": {
+      "type": "email"
+    },
+
+    "contactPhone": {
+      "type": "string"
+    },
+
+    "verified": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

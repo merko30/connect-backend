@@ -430,6 +430,128 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiClubClub extends Struct.CollectionTypeSchema {
+  collectionName: 'clubs';
+  info: {
+    description: 'Football club';
+    displayName: 'Club';
+    pluralName: 'clubs';
+    singularName: 'club';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    city: Schema.Attribute.String;
+    clubName: Schema.Attribute.String & Schema.Attribute.Required;
+    contactEmail: Schema.Attribute.Email;
+    contactPhone: Schema.Attribute.String;
+    country: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    league: Schema.Attribute.String;
+    level: Schema.Attribute.Enumeration<['amateur', 'semi-pro', 'pro']> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::club.club'> &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    website: Schema.Attribute.String;
+  };
+}
+
+export interface ApiPlayerProfilePlayerProfile
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'player_profiles';
+  info: {
+    description: 'Football player profile';
+    displayName: 'Player Profile';
+    pluralName: 'player-profiles';
+    singularName: 'player-profile';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    availabilityFrom: Schema.Attribute.Date;
+    bio: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currentClub: Schema.Attribute.String;
+    dateOfBirth: Schema.Attribute.Date & Schema.Attribute.Required;
+    experienceLevel: Schema.Attribute.Enumeration<
+      ['youth', 'amateur', 'semi-pro', 'pro']
+    > &
+      Schema.Attribute.Required;
+    firstName: Schema.Attribute.String & Schema.Attribute.Required;
+    gallery: Schema.Attribute.Media<'images', true>;
+    heightCm: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 220;
+          min: 140;
+        },
+        number
+      >;
+    highlightVideos: Schema.Attribute.Media<'videos', true>;
+    isFreeAgent: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    lastName: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::player-profile.player-profile'
+    > &
+      Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    nationality: Schema.Attribute.String;
+    preferredFoot: Schema.Attribute.Enumeration<['left', 'right', 'both']> &
+      Schema.Attribute.DefaultTo<'right'>;
+    primaryPosition: Schema.Attribute.Enumeration<
+      ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST']
+    > &
+      Schema.Attribute.Required;
+    profilePhoto: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    secondaryPositions: Schema.Attribute.Enumeration<
+      ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST']
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    visibility: Schema.Attribute.Enumeration<
+      ['public', 'clubs-only', 'private']
+    > &
+      Schema.Attribute.DefaultTo<'clubs-only'>;
+    weightKg: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 150;
+          min: 40;
+        },
+        number
+      >;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -940,6 +1062,8 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::club.club': ApiClubClub;
+      'api::player-profile.player-profile': ApiPlayerProfilePlayerProfile;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

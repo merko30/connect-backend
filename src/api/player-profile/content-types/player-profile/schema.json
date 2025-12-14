@@ -1,0 +1,121 @@
+{
+  "kind": "collectionType",
+  "collectionName": "player_profiles",
+  "info": {
+    "singularName": "player-profile",
+    "pluralName": "player-profiles",
+    "displayName": "Player Profile",
+    "description": "Football player profile"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true,
+      "unique": true
+    },
+
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": true
+    },
+
+    "dateOfBirth": {
+      "type": "date",
+      "required": true
+    },
+
+    "nationality": {
+      "type": "string"
+    },
+
+    "heightCm": {
+      "type": "integer",
+      "min": 140,
+      "max": 220
+    },
+
+    "weightKg": {
+      "type": "integer",
+      "min": 40,
+      "max": 150
+    },
+
+    "preferredFoot": {
+      "type": "enumeration",
+      "enum": ["left", "right", "both"],
+      "default": "right"
+    },
+
+    "primaryPosition": {
+      "type": "enumeration",
+      "enum": ["GK", "CB", "LB", "RB", "CDM", "CM", "CAM", "LW", "RW", "ST"],
+      "required": true
+    },
+
+    "secondaryPositions": {
+      "type": "enumeration",
+      "enum": ["GK", "CB", "LB", "RB", "CDM", "CM", "CAM", "LW", "RW", "ST"],
+      "multiple": true
+    },
+
+    "experienceLevel": {
+      "type": "enumeration",
+      "enum": ["youth", "amateur", "semi-pro", "pro"],
+      "required": true
+    },
+
+    "currentClub": {
+      "type": "string"
+    },
+
+    "isFreeAgent": {
+      "type": "boolean",
+      "default": true
+    },
+
+    "availabilityFrom": {
+      "type": "date"
+    },
+
+    "location": {
+      "type": "string"
+    },
+
+    "bio": {
+      "type": "richtext"
+    },
+
+    "profilePhoto": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+
+    "highlightVideos": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["videos"]
+    },
+
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+
+    "visibility": {
+      "type": "enumeration",
+      "enum": ["public", "clubs-only", "private"],
+      "default": "clubs-only"
+    }
+  }
+}
