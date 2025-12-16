@@ -18,6 +18,12 @@
     "expiresAt": {
       "type": "datetime",
       "required": true
+    },
+    "email": {
+      "type": "email"
+    },
+    "phoneNumber": {
+      "type": "string"
     }
   }
 }
