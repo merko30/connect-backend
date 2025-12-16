@@ -472,6 +472,32 @@ export interface ApiClubClub extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiOtpOtp extends Struct.CollectionTypeSchema {
+  collectionName: 'otps';
+  info: {
+    displayName: 'OTP';
+    pluralName: 'otps';
+    singularName: 'otp';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    code: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expiresAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::otp.otp'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPlayerProfilePlayerProfile
   extends Struct.CollectionTypeSchema {
   collectionName: 'player_profiles';
@@ -1063,6 +1089,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::club.club': ApiClubClub;
+      'api::otp.otp': ApiOtpOtp;
       'api::player-profile.player-profile': ApiPlayerProfilePlayerProfile;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
