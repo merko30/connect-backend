@@ -10,15 +10,13 @@
   "options": {
     "draftAndPublish": false
   },
+  "pluginOptions": {},
   "attributes": {
     "user": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "plugin::users-permissions.user",
-      "required": true,
-      "unique": true
+      "target": "plugin::users-permissions.user"
     },
-
     "firstName": {
       "type": "string",
       "required": true
@@ -27,95 +25,118 @@
       "type": "string",
       "required": true
     },
-
     "dateOfBirth": {
       "type": "date",
-      "required": true
+      "required": false
     },
-
     "nationality": {
       "type": "string"
     },
-
     "heightCm": {
       "type": "integer",
       "min": 140,
       "max": 220
     },
-
     "weightKg": {
       "type": "integer",
       "min": 40,
       "max": 150
     },
-
     "preferredFoot": {
       "type": "enumeration",
-      "enum": ["left", "right", "both"],
-      "default": "right"
+      "default": "right",
+      "enum": [
+        "left",
+        "right",
+        "both"
+      ]
     },
-
     "primaryPosition": {
       "type": "enumeration",
-      "enum": ["GK", "CB", "LB", "RB", "CDM", "CM", "CAM", "LW", "RW", "ST"],
-      "required": true
+      "required": false,
+      "enum": [
+        "GK",
+        "CB",
+        "LB",
+        "RB",
+        "CDM",
+        "CM",
+        "CAM",
+        "LW",
+        "RW",
+        "ST"
+      ]
     },
-
     "secondaryPositions": {
       "type": "enumeration",
-      "enum": ["GK", "CB", "LB", "RB", "CDM", "CM", "CAM", "LW", "RW", "ST"],
-      "multiple": true
+      "enum": [
+        "GK",
+        "CB",
+        "LB",
+        "RB",
+        "CDM",
+        "CM",
+        "CAM",
+        "LW",
+        "RW",
+        "ST"
+      ]
     },
-
     "experienceLevel": {
       "type": "enumeration",
-      "enum": ["youth", "amateur", "semi-pro", "pro"],
-      "required": true
+      "required": false,
+      "enum": [
+        "youth",
+        "amateur",
+        "semi-pro",
+        "pro"
+      ]
     },
-
     "currentClub": {
       "type": "string"
     },
-
     "isFreeAgent": {
       "type": "boolean",
       "default": true
     },
-
     "availabilityFrom": {
       "type": "date"
     },
-
     "location": {
       "type": "string"
     },
-
     "bio": {
       "type": "richtext"
     },
-
     "profilePhoto": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-
     "highlightVideos": {
       "type": "media",
       "multiple": true,
-      "allowedTypes": ["videos"]
+      "allowedTypes": [
+        "videos"
+      ]
     },
-
     "gallery": {
       "type": "media",
       "multiple": true,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-
     "visibility": {
       "type": "enumeration",
-      "enum": ["public", "clubs-only", "private"],
-      "default": "clubs-only"
+      "default": "clubs-only",
+      "enum": [
+        "public",
+        "clubs-only",
+        "private"
+      ]
     }
   }
 }

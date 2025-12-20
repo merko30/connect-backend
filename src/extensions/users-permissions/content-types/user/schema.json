@@ -68,6 +68,12 @@
     },
     "phoneNumber": {
       "type": "string"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
     }
   }
 }

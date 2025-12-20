@@ -519,11 +519,10 @@ export interface ApiPlayerProfilePlayerProfile
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     currentClub: Schema.Attribute.String;
-    dateOfBirth: Schema.Attribute.Date & Schema.Attribute.Required;
+    dateOfBirth: Schema.Attribute.Date;
     experienceLevel: Schema.Attribute.Enumeration<
       ['youth', 'amateur', 'semi-pro', 'pro']
-    > &
-      Schema.Attribute.Required;
+    >;
     firstName: Schema.Attribute.String & Schema.Attribute.Required;
     gallery: Schema.Attribute.Media<'images', true>;
     heightCm: Schema.Attribute.Integer &
@@ -549,8 +548,7 @@ export interface ApiPlayerProfilePlayerProfile
       Schema.Attribute.DefaultTo<'right'>;
     primaryPosition: Schema.Attribute.Enumeration<
       ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST']
-    > &
-      Schema.Attribute.Required;
+    >;
     profilePhoto: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
     secondaryPositions: Schema.Attribute.Enumeration<
@@ -562,9 +560,7 @@ export interface ApiPlayerProfilePlayerProfile
     user: Schema.Attribute.Relation<
       'oneToOne',
       'plugin::users-permissions.user'
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    >;
     visibility: Schema.Attribute.Enumeration<
       ['public', 'clubs-only', 'private']
     > &
@@ -1048,6 +1044,8 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    firstName: Schema.Attribute.String;
+    lastName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
