@@ -1,5 +1,8 @@
 import { Core } from "@strapi/strapi";
 
+const PLAYER_ROLE_ID = 3;
+const COACH_ROLE_ID = 4;
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -20,6 +23,9 @@ export default {
           user: { id: number; documentId: string };
         };
 
+        const isPlayer = ctx.request.body.role === PLAYER_ROLE_ID;
+        const isCoach = ctx.request.body.role === COACH_ROLE_ID;
+
         await strapi.documents("plugin::users-permissions.user").update({
           documentId: user.documentId,
           data: {
@@ -28,13 +34,35 @@ export default {
         });
 
         const { firstName, lastName } = ctx.request.body;
-        await strapi.documents("api::player-profile.player-profile").create({
-          data: {
-            user: user.id,
-            firstName,
-            lastName,
-          },
-        });
+        if (isPlayer) {
+          await strapi.documents("api::player-profile.player-profile").create({
+            data: {
+              user: user.id,
+              firstName,
+              lastName,
+            },
+          });
+        } else if (isCoach) {
+          const { clubName, contactPhone, email } = ctx.request.body;
+          await strapi.documents("api::club.club").create({
+            data: {
+              user: user.id,
+              clubName,
+              contactPhone,
+              contactEmail: email,
+            },
+          });
+        }
+
+        const jwt = strapi
+          .plugin("users-permissions")
+          .service("jwt")
+          .issue({ id: user.id });
+
+        ctx.response.body = {
+          jwt,
+          user,
+        };
       }
     };
   },

@@ -10,57 +10,52 @@
   "options": {
     "draftAndPublish": true
   },
+  "pluginOptions": {},
   "attributes": {
     "user": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "plugin::users-permissions.user",
-      "required": true,
-      "unique": true
+      "target": "plugin::users-permissions.user"
     },
-
     "clubName": {
       "type": "string",
       "required": true
     },
-
     "country": {
       "type": "string",
-      "required": true
+      "required": false
     },
-
     "city": {
       "type": "string"
     },
-
     "league": {
       "type": "string"
     },
-
     "level": {
       "type": "enumeration",
-      "enum": ["amateur", "semi-pro", "pro"],
-      "required": true
+      "required": false,
+      "enum": [
+        "amateur",
+        "semi-pro",
+        "pro"
+      ]
     },
-
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-
     "website": {
       "type": "string"
     },
-
     "contactEmail": {
       "type": "email"
     },
-
     "contactPhone": {
       "type": "string"
     },
-
     "verified": {
       "type": "boolean",
       "default": false

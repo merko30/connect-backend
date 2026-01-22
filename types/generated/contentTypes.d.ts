@@ -446,13 +446,12 @@ export interface ApiClubClub extends Struct.CollectionTypeSchema {
     clubName: Schema.Attribute.String & Schema.Attribute.Required;
     contactEmail: Schema.Attribute.Email;
     contactPhone: Schema.Attribute.String;
-    country: Schema.Attribute.String & Schema.Attribute.Required;
+    country: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     league: Schema.Attribute.String;
-    level: Schema.Attribute.Enumeration<['amateur', 'semi-pro', 'pro']> &
-      Schema.Attribute.Required;
+    level: Schema.Attribute.Enumeration<['amateur', 'semi-pro', 'pro']>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::club.club'> &
       Schema.Attribute.Private;
@@ -464,39 +463,9 @@ export interface ApiClubClub extends Struct.CollectionTypeSchema {
     user: Schema.Attribute.Relation<
       'oneToOne',
       'plugin::users-permissions.user'
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    >;
     verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     website: Schema.Attribute.String;
-  };
-}
-
-export interface ApiOtpOtp extends Struct.CollectionTypeSchema {
-  collectionName: 'otps';
-  info: {
-    displayName: 'OTP';
-    pluralName: 'otps';
-    singularName: 'otp';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    code: Schema.Attribute.String & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    email: Schema.Attribute.Email;
-    expiresAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::otp.otp'> &
-      Schema.Attribute.Private;
-    phoneNumber: Schema.Attribute.String;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
   };
 }
 
@@ -519,12 +488,11 @@ export interface ApiPlayerProfilePlayerProfile
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     currentClub: Schema.Attribute.String;
-    dateOfBirth: Schema.Attribute.Date;
     experienceLevel: Schema.Attribute.Enumeration<
       ['youth', 'amateur', 'semi-pro', 'pro']
     >;
     firstName: Schema.Attribute.String & Schema.Attribute.Required;
-    gallery: Schema.Attribute.Media<'images', true>;
+    formerClubs: Schema.Attribute.JSON;
     heightCm: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -533,7 +501,6 @@ export interface ApiPlayerProfilePlayerProfile
         },
         number
       >;
-    highlightVideos: Schema.Attribute.Media<'videos', true>;
     isFreeAgent: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     lastName: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -542,8 +509,6 @@ export interface ApiPlayerProfilePlayerProfile
       'api::player-profile.player-profile'
     > &
       Schema.Attribute.Private;
-    location: Schema.Attribute.String;
-    nationality: Schema.Attribute.String;
     preferredFoot: Schema.Attribute.Enumeration<['left', 'right', 'both']> &
       Schema.Attribute.DefaultTo<'right'>;
     primaryPosition: Schema.Attribute.Enumeration<
@@ -1034,6 +999,7 @@ export interface PluginUsersPermissionsUser
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    citizenship: Schema.Attribute.String;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
@@ -1052,6 +1018,8 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    nationality: Schema.Attribute.String;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
@@ -1089,7 +1057,6 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::club.club': ApiClubClub;
-      'api::otp.otp': ApiOtpOtp;
       'api::player-profile.player-profile': ApiPlayerProfilePlayerProfile;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

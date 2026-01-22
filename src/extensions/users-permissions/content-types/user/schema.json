@@ -74,6 +74,15 @@
     },
     "lastName": {
       "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "nationality": {
+      "type": "string"
+    },
+    "citizenship": {
+      "type": "string"
     }
   }
 }

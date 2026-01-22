@@ -25,13 +25,6 @@
       "type": "string",
       "required": true
     },
-    "dateOfBirth": {
-      "type": "date",
-      "required": false
-    },
-    "nationality": {
-      "type": "string"
-    },
     "heightCm": {
       "type": "integer",
       "min": 140,
@@ -102,29 +95,12 @@
     "availabilityFrom": {
       "type": "date"
     },
-    "location": {
-      "type": "string"
-    },
     "bio": {
       "type": "richtext"
     },
     "profilePhoto": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
-    },
-    "highlightVideos": {
-      "type": "media",
-      "multiple": true,
-      "allowedTypes": [
-        "videos"
-      ]
-    },
-    "gallery": {
-      "type": "media",
-      "multiple": true,
       "allowedTypes": [
         "images"
       ]
@@ -137,6 +113,9 @@
         "clubs-only",
         "private"
       ]
+    },
+    "formerClubs": {
+      "type": "json"
     }
   }
 }

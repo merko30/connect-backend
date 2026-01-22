@@ -12,7 +12,21 @@ export default (plugin) => {
         populate: ["role"],
       });
 
-    return userWithRole;
+    const player = await strapi
+      .documents("api::player-profile.player-profile")
+      .findFirst({
+        filters: {
+          user: { id: userWithRole.id },
+        },
+      });
+
+    const club = await strapi.documents("api::club.club").findFirst({
+      filters: {
+        user: { id: userWithRole.id },
+      },
+    });
+
+    return { ...userWithRole, player, club };
   };
 
   return plugin;
