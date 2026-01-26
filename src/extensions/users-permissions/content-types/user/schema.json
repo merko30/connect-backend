@@ -83,6 +83,28 @@
     },
     "citizenship": {
       "type": "string"
+    },
+    "stripeCustomerId": {
+      "type": "string"
+    },
+    "subscriptionStatus": {
+      "type": "enumeration",
+      "enum": ["trialing", "active", "past_due", "canceled", "incomplete"]
+    },
+    "subscriptionId": {
+      "type": "string"
+    },
+    "priceId": {
+      "type": "string"
+    },
+    "currentPeriodEnd": {
+      "type": "string"
+    },
+    "subscription": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::subscription.subscription",
+      "inversedBy": "user"
     }
   }
 }

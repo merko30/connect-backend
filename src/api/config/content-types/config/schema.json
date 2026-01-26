@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "configs",
+  "info": {
+    "singularName": "config",
+    "pluralName": "configs",
+    "displayName": "Config"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "stripe_pk": {
+      "type": "string",
+      "required": true
+    },
+    "stripe_sk": {
+      "type": "string",
+      "required": true
+    },
+    "stripe_webhook_secret": {
+      "type": "string"
+    },
+    "premium_plan_id": {
+      "type": "string"
+    }
+  }
+}

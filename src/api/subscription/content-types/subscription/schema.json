@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "subscriptions",
+  "info": {
+    "singularName": "subscription",
+    "pluralName": "subscriptions",
+    "displayName": "Subscription"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "customerId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "trialing",
+        "active",
+        "past_due",
+        "canceled",
+        "incomplete"
+      ]
+    },
+    "subscriptionId": {
+      "type": "string"
+    },
+    "priceId": {
+      "type": "string"
+    },
+    "currentPeriodEnd": {
+      "type": "string"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "subscription"
+    },
+    "period_start": {
+      "type": "datetime"
+    },
+    "period_end": {
+      "type": "datetime"
+    }
+  }
+}

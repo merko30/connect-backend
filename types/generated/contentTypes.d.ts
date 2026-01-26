@@ -469,6 +469,37 @@ export interface ApiClubClub extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiConfigConfig extends Struct.CollectionTypeSchema {
+  collectionName: 'configs';
+  info: {
+    displayName: 'Config';
+    pluralName: 'configs';
+    singularName: 'config';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::config.config'
+    > &
+      Schema.Attribute.Private;
+    premium_plan_id: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    stripe_pk: Schema.Attribute.String & Schema.Attribute.Required;
+    stripe_sk: Schema.Attribute.String & Schema.Attribute.Required;
+    stripe_webhook_secret: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPlayerProfilePlayerProfile
   extends Struct.CollectionTypeSchema {
   collectionName: 'player_profiles';
@@ -538,6 +569,47 @@ export interface ApiPlayerProfilePlayerProfile
         },
         number
       >;
+  };
+}
+
+export interface ApiSubscriptionSubscription
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'subscriptions';
+  info: {
+    displayName: 'Subscription';
+    pluralName: 'subscriptions';
+    singularName: 'subscription';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currentPeriodEnd: Schema.Attribute.String;
+    customerId: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::subscription.subscription'
+    > &
+      Schema.Attribute.Private;
+    period_end: Schema.Attribute.DateTime;
+    period_start: Schema.Attribute.DateTime;
+    priceId: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Enumeration<
+      ['trialing', 'active', 'past_due', 'canceled', 'incomplete']
+    >;
+    subscriptionId: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1005,6 +1077,7 @@ export interface PluginUsersPermissionsUser
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    currentPeriodEnd: Schema.Attribute.String;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -1026,12 +1099,22 @@ export interface PluginUsersPermissionsUser
         minLength: 6;
       }>;
     phoneNumber: Schema.Attribute.String;
+    priceId: Schema.Attribute.String;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.role'
+    >;
+    stripeCustomerId: Schema.Attribute.String;
+    subscription: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::subscription.subscription'
+    >;
+    subscriptionId: Schema.Attribute.String;
+    subscriptionStatus: Schema.Attribute.Enumeration<
+      ['trialing', 'active', 'past_due', 'canceled', 'incomplete']
     >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1057,7 +1140,9 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::club.club': ApiClubClub;
+      'api::config.config': ApiConfigConfig;
       'api::player-profile.player-profile': ApiPlayerProfilePlayerProfile;
+      'api::subscription.subscription': ApiSubscriptionSubscription;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
