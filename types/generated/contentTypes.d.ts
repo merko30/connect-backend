@@ -599,10 +599,10 @@ export interface ApiSubscriptionSubscription
     period_start: Schema.Attribute.DateTime;
     priceId: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    status: Schema.Attribute.Enumeration<
+    subscriptionId: Schema.Attribute.String;
+    subscriptionStatus: Schema.Attribute.Enumeration<
       ['trialing', 'active', 'past_due', 'canceled', 'incomplete']
     >;
-    subscriptionId: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

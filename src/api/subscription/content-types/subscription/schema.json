@@ -14,7 +14,7 @@
     "customerId": {
       "type": "string"
     },
-    "status": {
+    "subscriptionStatus": {
       "type": "enumeration",
       "enum": [
         "trialing",

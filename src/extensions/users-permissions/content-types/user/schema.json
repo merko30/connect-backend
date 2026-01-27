@@ -89,7 +89,13 @@
     },
     "subscriptionStatus": {
       "type": "enumeration",
-      "enum": ["trialing", "active", "past_due", "canceled", "incomplete"]
+      "enum": [
+        "trialing",
+        "active",
+        "past_due",
+        "canceled",
+        "incomplete"
+      ]
     },
     "subscriptionId": {
       "type": "string"

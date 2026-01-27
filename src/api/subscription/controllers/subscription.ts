@@ -9,6 +9,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2023-10-16" as any,
 });
 
+const PRICE_ID = "price_1StqkqGcAeBpaFvW6s3THUgY";
+
 export default factories.createCoreController(
   "api::subscription.subscription",
   ({ strapi }) => ({
@@ -17,15 +19,11 @@ export default factories.createCoreController(
      */
     async subscribe(ctx) {
       try {
-        const { priceId } = ctx.request.body;
+        const { priceId, trialPeriodDays } = ctx.request.body;
         const userId = ctx.state.user?.id;
 
         if (!userId) {
           return ctx.badRequest("User not authenticated");
-        }
-
-        if (!priceId) {
-          return ctx.badRequest("priceId is required");
         }
 
         // Get user from database
@@ -61,16 +59,33 @@ export default factories.createCoreController(
         }
 
         // Create subscription in Stripe
-        const subscription = (await stripe.subscriptions.create({
+        const subscriptionParams: Stripe.SubscriptionCreateParams = {
           customer: customerId,
           items: [
             {
-              price: priceId,
+              price: PRICE_ID,
             },
           ],
           payment_behavior: "default_incomplete",
-          expand: ["latest_invoice.payment_intent"],
-        })) as any;
+          expand: ["latest_invoice.payment_intent", "pending_setup_intent"],
+          payment_settings: {
+            save_default_payment_method: "on_subscription",
+          },
+          metadata: {
+            userId: userId.toString(),
+          },
+        };
+
+        // Add trial period if provided
+        if (trialPeriodDays) {
+          subscriptionParams.trial_period_days = trialPeriodDays;
+        }
+
+        const subscription = (await stripe.subscriptions.create(
+          subscriptionParams,
+        )) as any;
+
+        console.log(subscription.trial_end, subscription.status);
 
         // Create subscription record in database
         const subscriptionRecord = await strapi
@@ -79,8 +94,8 @@ export default factories.createCoreController(
             data: {
               customerId,
               subscriptionId: subscription.id,
-              priceId,
-              status: subscription.status,
+              priceId: PRICE_ID,
+              subscriptionStatus: subscription.status,
               currentPeriodEnd: new Date(
                 (subscription.current_period_end as number) * 1000,
               ).toISOString(),
@@ -99,8 +114,10 @@ export default factories.createCoreController(
           where: { id: userId },
           data: {
             subscriptionId: subscription.id,
-            subscriptionStatus: subscription.status,
-            priceId,
+            subscriptionStatus: subscription.trial_end
+              ? "trialing"
+              : subscription.status,
+            priceId: PRICE_ID,
             currentPeriodEnd: new Date(
               (subscription.current_period_end as number) * 1000,
             ).toISOString(),
@@ -110,8 +127,9 @@ export default factories.createCoreController(
         ctx.send({
           subscription: subscriptionRecord,
           clientSecret:
-            (subscription.latest_invoice as any)?.payment_intent
-              ?.client_secret || null,
+            (subscription as Stripe.Subscription)?.[
+              trialPeriodDays ? "pending_setup_intent" : "payment_intent"
+            ]?.client_secret || null,
         });
       } catch (err: any) {
         strapi.log.error("Subscription error:", err);
@@ -131,11 +149,7 @@ export default factories.createCoreController(
         }
 
         // Get raw body - Stripe needs this for signature verification
-        const rawBody =
-          (ctx.request as any).rawBody ||
-          (typeof ctx.request.body === "string"
-            ? ctx.request.body
-            : JSON.stringify(ctx.request.body));
+        const rawBody = ctx.request.body[Symbol.for("unparsedBody")];
 
         const event = stripe.webhooks.constructEvent(
           rawBody,
@@ -188,11 +202,13 @@ async function handleSubscriptionCreated(subscription: any, strapi: any) {
       where: { subscriptionId: subscription.id },
     });
 
+  console.log({ creating: subscription.status, end: subscription.trial_end });
+
   if (subscriptionRecord) {
     await strapi.query("api::subscription.subscription").update({
       where: { id: subscriptionRecord.id },
       data: {
-        status: subscription.status,
+        subscriptionStatus: subscription.status,
         currentPeriodEnd: new Date(
           (subscription.current_period_end as number) * 1000,
         ).toISOString(),
@@ -205,7 +221,9 @@ async function handleSubscriptionCreated(subscription: any, strapi: any) {
     await strapi.query("plugin::users-permissions.user").update({
       where: { id: parseInt(subscription.metadata.userId) },
       data: {
-        subscriptionStatus: subscription.status,
+        subscriptionStatus: subscription.trial_end
+          ? "trialing"
+          : subscription.status,
         currentPeriodEnd: new Date(
           (subscription.current_period_end as number) * 1000,
         ).toISOString(),
@@ -226,11 +244,13 @@ async function handleSubscriptionUpdated(subscription: any, strapi: any) {
       where: { subscriptionId: subscription.id },
     });
 
+  console.log({ updating: subscription.status, end: subscription.trial_end });
+
   if (subscriptionRecord) {
     await strapi.query("api::subscription.subscription").update({
       where: { id: subscriptionRecord.id },
       data: {
-        status: subscription.status,
+        subscriptionStatus: subscription.status,
         currentPeriodEnd: new Date(
           (subscription.current_period_end as number) * 1000,
         ).toISOString(),
@@ -246,7 +266,9 @@ async function handleSubscriptionUpdated(subscription: any, strapi: any) {
     await strapi.query("plugin::users-permissions.user").update({
       where: { id: parseInt(subscription.metadata.userId) },
       data: {
-        subscriptionStatus: subscription.status,
+        subscriptionStatus: subscription.trial_end
+          ? "trialing"
+          : subscription.status,
         currentPeriodEnd: new Date(
           (subscription.current_period_end as number) * 1000,
         ).toISOString(),
@@ -274,7 +296,7 @@ async function handlePaymentSucceeded(invoice: any, strapi: any) {
       await strapi.query("api::subscription.subscription").update({
         where: { id: subscriptionRecord.id },
         data: {
-          status: "active",
+          status: invoice.amount_paid > 0 ? "active" : "trialing",
         },
       });
     }
@@ -291,7 +313,7 @@ async function handlePaymentSucceeded(invoice: any, strapi: any) {
         await strapi.query("plugin::users-permissions.user").update({
           where: { id: user.id },
           data: {
-            subscriptionStatus: "active",
+            subscriptionStatus: invoice.amount_paid > 0 ? "active" : "trialing",
           },
         });
       }
