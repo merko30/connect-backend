@@ -519,6 +519,7 @@ export interface ApiPlayerProfilePlayerProfile
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     currentClub: Schema.Attribute.String;
+    dateOfBirth: Schema.Attribute.Date;
     experienceLevel: Schema.Attribute.Enumeration<
       ['youth', 'amateur', 'semi-pro', 'pro']
     >;
@@ -1084,6 +1085,7 @@ export interface PluginUsersPermissionsUser
         minLength: 6;
       }>;
     firstName: Schema.Attribute.String;
+    hasUsedTrial: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     lastName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

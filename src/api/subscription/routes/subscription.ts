@@ -8,6 +8,18 @@ module.exports = {
     },
     {
       method: "POST",
+      path: "/subscriptions/cancel",
+      handler: "api::subscription.subscription.cancel",
+      config: {},
+    },
+    {
+      method: "GET",
+      path: "/subscriptions/status",
+      handler: "api::subscription.subscription.status",
+      config: {},
+    },
+    {
+      method: "POST",
       path: "/subscriptions/webhook",
       handler: "api::subscription.subscription.webhook",
       config: {

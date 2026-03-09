@@ -37,6 +37,11 @@ export default factories.createCoreController(
           return ctx.notFound("User not found");
         }
 
+        // Check if user already used trial
+        if (trialPeriodDays && user.hasUsedTrial) {
+          return ctx.badRequest("Free trial already used");
+        }
+
         let customerId = user.stripeCustomerId;
 
         // Create Stripe customer if doesn't exist
@@ -110,18 +115,25 @@ export default factories.createCoreController(
           });
 
         // Update user subscription info
+        const userUpdateData: any = {
+          subscriptionId: subscription.id,
+          subscriptionStatus: subscription.trial_end
+            ? "trialing"
+            : subscription.status,
+          priceId: PRICE_ID,
+          currentPeriodEnd: new Date(
+            (subscription.current_period_end as number) * 1000,
+          ).toISOString(),
+        };
+
+        // Mark trial as used if trial period was applied
+        if (trialPeriodDays) {
+          userUpdateData.hasUsedTrial = true;
+        }
+
         await strapi.query("plugin::users-permissions.user").update({
           where: { id: userId },
-          data: {
-            subscriptionId: subscription.id,
-            subscriptionStatus: subscription.trial_end
-              ? "trialing"
-              : subscription.status,
-            priceId: PRICE_ID,
-            currentPeriodEnd: new Date(
-              (subscription.current_period_end as number) * 1000,
-            ).toISOString(),
-          },
+          data: userUpdateData,
         });
 
         ctx.send({
@@ -133,6 +145,178 @@ export default factories.createCoreController(
         });
       } catch (err: any) {
         strapi.log.error("Subscription error:", err);
+        ctx.throw(500, err.message);
+      }
+    },
+
+    /**
+     * Get subscription status for current user
+     */
+    async status(ctx) {
+      try {
+        const userId = ctx.state.user?.id;
+
+        if (!userId) {
+          return ctx.badRequest("User not authenticated");
+        }
+
+        // Get user from database
+        const user = await strapi
+          .query("plugin::users-permissions.user")
+          .findOne({
+            where: { id: userId },
+          });
+
+        if (!user) {
+          return ctx.notFound("User not found");
+        }
+
+        // Get subscription record from database
+        const subscriptionRecord = await strapi
+          .query("api::subscription.subscription")
+          .findOne({
+            where: { user: userId },
+          });
+
+        // If no subscription exists
+        if (!subscriptionRecord || !user.subscriptionId) {
+          return ctx.send({
+            hasSubscription: false,
+            hasUsedTrial: user.hasUsedTrial || false,
+            isEligibleForTrial: !user.hasUsedTrial,
+          });
+        }
+
+        // Fetch latest subscription data from Stripe
+        let stripeSubscription = null;
+        let cancelAtPeriodEnd = false;
+        let cancelAt = null;
+
+        try {
+          stripeSubscription = await stripe.subscriptions.retrieve(
+            user.subscriptionId,
+          );
+          cancelAtPeriodEnd = stripeSubscription.cancel_at_period_end;
+          cancelAt = stripeSubscription.cancel_at
+            ? new Date(stripeSubscription.cancel_at * 1000).toISOString()
+            : null;
+        } catch (err) {
+          strapi.log.warn(
+            `Could not fetch Stripe subscription: ${err.message}`,
+          );
+          // Continue with database data if Stripe fetch fails
+        }
+
+        // Determine if subscription is active (including trial)
+        const isActive = ["active", "trialing"].includes(
+          subscriptionRecord.subscriptionStatus,
+        );
+        const isTrialing = subscriptionRecord.subscriptionStatus === "trialing";
+        const isCanceled = subscriptionRecord.subscriptionStatus === "canceled";
+        const isPastDue = subscriptionRecord.subscriptionStatus === "past_due";
+
+        // Calculate days remaining
+        const periodEnd = new Date(subscriptionRecord.currentPeriodEnd);
+        const now = new Date();
+        const daysRemaining = Math.ceil(
+          (periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+        );
+
+        ctx.send({
+          hasSubscription: true,
+          isActive,
+          isTrialing,
+          isCanceled,
+          isPastDue,
+          status: subscriptionRecord.subscriptionStatus,
+          subscriptionId: subscriptionRecord.subscriptionId,
+          customerId: subscriptionRecord.customerId,
+          priceId: subscriptionRecord.priceId,
+          currentPeriodEnd: subscriptionRecord.currentPeriodEnd,
+          periodStart: subscriptionRecord.period_start,
+          periodEnd: subscriptionRecord.period_end,
+          daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
+          cancelAtPeriodEnd,
+          cancelAt,
+          hasUsedTrial: user.hasUsedTrial || false,
+          willCancelAt: cancelAtPeriodEnd
+            ? subscriptionRecord.currentPeriodEnd
+            : null,
+        });
+      } catch (err: any) {
+        strapi.log.error("Get subscription status error:", err);
+        ctx.throw(500, err.message);
+      }
+    },
+
+    /**
+     * Cancel user subscription at period end
+     */
+    async cancel(ctx) {
+      try {
+        const userId = ctx.state.user?.id;
+
+        if (!userId) {
+          return ctx.badRequest("User not authenticated");
+        }
+
+        const user = await strapi
+          .query("plugin::users-permissions.user")
+          .findOne({
+            where: { id: userId },
+          });
+
+        if (!user?.subscriptionId) {
+          return ctx.notFound("No active subscription found for user");
+        }
+
+        const updatedSubscription = (await stripe.subscriptions.update(
+          user.subscriptionId,
+          {
+            cancel_at_period_end: true,
+          },
+        )) as any;
+
+        const subscriptionRecord = await strapi
+          .query("api::subscription.subscription")
+          .findOne({
+            where: { subscriptionId: user.subscriptionId },
+          });
+
+        if (subscriptionRecord) {
+          await strapi.query("api::subscription.subscription").update({
+            where: { id: subscriptionRecord.id },
+            data: {
+              currentPeriodEnd: new Date(
+                (updatedSubscription.current_period_end as number) * 1000,
+              ).toISOString(),
+              period_end: new Date(
+                (updatedSubscription.current_period_end as number) * 1000,
+              ),
+            },
+          });
+        }
+
+        await strapi.query("plugin::users-permissions.user").update({
+          where: { id: userId },
+          data: {
+            currentPeriodEnd: new Date(
+              (updatedSubscription.current_period_end as number) * 1000,
+            ).toISOString(),
+          },
+        });
+
+        ctx.send({
+          message: "Subscription will cancel at period end",
+          subscriptionId: updatedSubscription.id,
+          status: user.subscriptionStatus || updatedSubscription.status,
+          cancelAtPeriodEnd: updatedSubscription.cancel_at_period_end,
+          currentPeriodEnd: new Date(
+            (updatedSubscription.current_period_end as number) * 1000,
+          ).toISOString(),
+        });
+      } catch (err: any) {
+        strapi.log.error("Cancel subscription error:", err);
         ctx.throw(500, err.message);
       }
     },
@@ -296,7 +480,7 @@ async function handlePaymentSucceeded(invoice: any, strapi: any) {
       await strapi.query("api::subscription.subscription").update({
         where: { id: subscriptionRecord.id },
         data: {
-          status: invoice.amount_paid > 0 ? "active" : "trialing",
+          subscriptionStatus: invoice.amount_paid > 0 ? "active" : "trialing",
         },
       });
     }
@@ -338,7 +522,7 @@ async function handlePaymentFailed(invoice: any, strapi: any) {
       await strapi.query("api::subscription.subscription").update({
         where: { id: subscriptionRecord.id },
         data: {
-          status: "past_due",
+          subscriptionStatus: "past_due",
         },
       });
     }
@@ -379,7 +563,7 @@ async function handleSubscriptionDeleted(subscription: any, strapi: any) {
     await strapi.query("api::subscription.subscription").update({
       where: { id: subscriptionRecord.id },
       data: {
-        status: "canceled",
+        subscriptionStatus: "canceled",
       },
     });
   }
