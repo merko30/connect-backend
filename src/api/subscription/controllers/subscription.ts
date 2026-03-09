@@ -90,8 +90,6 @@ export default factories.createCoreController(
           subscriptionParams,
         )) as any;
 
-        console.log(subscription.trial_end, subscription.status);
-
         // Create subscription record in database
         const subscriptionRecord = await strapi
           .query("api::subscription.subscription")
@@ -138,10 +136,17 @@ export default factories.createCoreController(
 
         ctx.send({
           subscription: subscriptionRecord,
-          clientSecret:
-            (subscription as Stripe.Subscription)?.[
-              trialPeriodDays ? "pending_setup_intent" : "payment_intent"
-            ]?.client_secret || null,
+          clientSecret: trialPeriodDays
+            ? (
+                (subscription as Stripe.Subscription)?.[
+                  "pending_setup_intent"
+                ] as Stripe.SetupIntent
+              )?.client_secret
+            : (
+                (subscription as Stripe.Subscription)?.["latest_invoice"]?.[
+                  "payment_intent"
+                ] as Stripe.PaymentIntent
+              )?.client_secret,
         });
       } catch (err: any) {
         strapi.log.error("Subscription error:", err);
