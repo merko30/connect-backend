@@ -15,6 +15,101 @@ export default factories.createCoreController(
   "api::subscription.subscription",
   ({ strapi }) => ({
     /**
+     * Create Stripe Checkout Session and return hosted Stripe payment URL
+     */
+    async createCheckoutSession(ctx) {
+      try {
+        const userId = ctx.state.user?.id;
+
+        if (!userId) {
+          return ctx.badRequest("User not authenticated");
+        }
+
+        const { priceId, successUrl, cancelUrl } = ctx.request.body || {};
+
+        const user = await strapi
+          .query("plugin::users-permissions.user")
+          .findOne({
+            where: { id: userId },
+          });
+
+        if (!user) {
+          return ctx.notFound("User not found");
+        }
+
+        const configs = await strapi.query("api::config.config").findMany({
+          limit: 1,
+        });
+
+        const appConfig = configs?.[0];
+        const stripeSecretKey =
+          process.env.STRIPE_SECRET_KEY || appConfig?.stripe_sk;
+        const defaultPriceId = PRICE_ID;
+
+        if (!stripeSecretKey) {
+          return ctx.badRequest("Stripe secret key is not configured");
+        }
+
+        const stripeClient = new Stripe(stripeSecretKey, {
+          apiVersion: "2023-10-16" as any,
+        });
+
+        let customerId = user.stripeCustomerId;
+
+        if (!customerId) {
+          const customer = await stripeClient.customers.create({
+            email: user.email,
+            metadata: {
+              userId: userId.toString(),
+            },
+          });
+
+          customerId = customer.id;
+
+          await strapi.query("plugin::users-permissions.user").update({
+            where: { id: userId },
+            data: {
+              stripeCustomerId: customerId,
+            },
+          });
+        }
+
+        const frontendUrl =
+          process.env.FRONTEND_URL ||
+          process.env.CLIENT_URL ||
+          "http://localhost:3000";
+        const resolvedSuccessUrl =
+          successUrl ||
+          `${frontendUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
+        const resolvedCancelUrl = cancelUrl || `${frontendUrl}/payment/cancel`;
+
+        const session = await stripeClient.checkout.sessions.create({
+          mode: "subscription",
+          customer: customerId,
+          line_items: [
+            {
+              price: priceId || defaultPriceId,
+              quantity: 1,
+            },
+          ],
+          success_url: resolvedSuccessUrl,
+          cancel_url: resolvedCancelUrl,
+          metadata: {
+            userId: userId.toString(),
+          },
+        });
+
+        return ctx.send({
+          checkoutUrl: session.url,
+          sessionId: session.id,
+        });
+      } catch (err: any) {
+        strapi.log.error("Create checkout session error:", err);
+        ctx.throw(500, err.message);
+      }
+    },
+
+    /**
      * Subscribe user - creates Stripe customer if needed and subscription
      */
     async subscribe(ctx) {

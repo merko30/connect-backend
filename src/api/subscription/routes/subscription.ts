@@ -2,6 +2,12 @@ module.exports = {
   routes: [
     {
       method: "POST",
+      path: "/subscriptions/checkout-session",
+      handler: "api::subscription.subscription.createCheckoutSession",
+      config: {},
+    },
+    {
+      method: "POST",
       path: "/subscriptions/subscribe",
       handler: "api::subscription.subscription.subscribe",
       config: {},
