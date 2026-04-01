@@ -74,13 +74,11 @@ export default factories.createCoreController(
           });
         }
 
-        const frontendUrl =
-          process.env.FRONTEND_URL ||
-          process.env.CLIENT_URL ||
-          "http://localhost:3000";
+        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5174";
         const resolvedSuccessUrl =
           successUrl ||
           `${frontendUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
+        console.log({ successUrl });
         const resolvedCancelUrl = cancelUrl || `${frontendUrl}/payment/cancel`;
 
         const session = await stripeClient.checkout.sessions.create({
@@ -92,6 +90,11 @@ export default factories.createCoreController(
               quantity: 1,
             },
           ],
+          subscription_data: {
+            metadata: {
+              userId: userId.toString(),
+            },
+          },
           success_url: resolvedSuccessUrl,
           cancel_url: resolvedCancelUrl,
           metadata: {
@@ -480,34 +483,72 @@ export default factories.createCoreController(
  * Handle subscription created event
  */
 async function handleSubscriptionCreated(subscription: any, strapi: any) {
+  console.log(
+    `Handling subscription created event for subscription ID: ${subscription.id}`,
+  );
   const subscriptionRecord = await strapi
     .query("api::subscription.subscription")
     .findOne({
       where: { subscriptionId: subscription.id },
     });
 
+  const userIdFromMetadata = subscription.metadata?.userId
+    ? parseInt(subscription.metadata.userId, 10)
+    : null;
+  const customerId = String(subscription.customer || "");
+  const resolvedUserId = userIdFromMetadata
+    ? userIdFromMetadata
+    : (
+        await strapi.query("plugin::users-permissions.user").findOne({
+          where: { stripeCustomerId: customerId },
+          select: ["id"],
+        })
+      )?.id;
+  const subscriptionPriceId =
+    subscription.items?.data?.[0]?.price?.id ||
+    subscription.plan?.id ||
+    PRICE_ID;
+
+  const subscriptionData = {
+    customerId,
+    subscriptionId: subscription.id,
+    priceId: subscriptionPriceId,
+    subscriptionStatus: subscription.status,
+    currentPeriodEnd: new Date(
+      (subscription.current_period_end as number) * 1000,
+    ).toISOString(),
+    period_start: new Date(
+      (subscription.current_period_start as number) * 1000,
+    ),
+    period_end: new Date((subscription.current_period_end as number) * 1000),
+  };
+
   console.log({ creating: subscription.status, end: subscription.trial_end });
 
   if (subscriptionRecord) {
     await strapi.query("api::subscription.subscription").update({
       where: { id: subscriptionRecord.id },
+      data: subscriptionData,
+    });
+  } else {
+    await strapi.query("api::subscription.subscription").create({
       data: {
-        subscriptionStatus: subscription.status,
-        currentPeriodEnd: new Date(
-          (subscription.current_period_end as number) * 1000,
-        ).toISOString(),
+        ...subscriptionData,
+        ...(resolvedUserId ? { user: resolvedUserId } : {}),
       },
     });
   }
 
   // Update user status
-  if (subscription.metadata?.userId) {
+  if (resolvedUserId) {
     await strapi.query("plugin::users-permissions.user").update({
-      where: { id: parseInt(subscription.metadata.userId) },
+      where: { id: resolvedUserId },
       data: {
+        subscriptionId: subscription.id,
         subscriptionStatus: subscription.trial_end
           ? "trialing"
           : subscription.status,
+        priceId: subscriptionPriceId,
         currentPeriodEnd: new Date(
           (subscription.current_period_end as number) * 1000,
         ).toISOString(),

@@ -544,12 +544,40 @@ export interface ApiPlayerProfilePlayerProfile
     preferredFoot: Schema.Attribute.Enumeration<['left', 'right', 'both']> &
       Schema.Attribute.DefaultTo<'right'>;
     primaryPosition: Schema.Attribute.Enumeration<
-      ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST']
+      [
+        'GK',
+        'CB',
+        'LB',
+        'RB',
+        'CDM',
+        'CM',
+        'LM',
+        'RM',
+        'CAM',
+        'LW',
+        'RW',
+        'ST',
+        'CF',
+      ]
     >;
     profilePhoto: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
     secondaryPositions: Schema.Attribute.Enumeration<
-      ['GK', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST']
+      [
+        'GK',
+        'CB',
+        'LB',
+        'RB',
+        'CDM',
+        'CM',
+        'LM',
+        'RM',
+        'CAM',
+        'LW',
+        'RW',
+        'ST',
+        'CF',
+      ]
     >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

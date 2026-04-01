@@ -38,21 +38,58 @@
     "preferredFoot": {
       "type": "enumeration",
       "default": "right",
-      "enum": ["left", "right", "both"]
+      "enum": [
+        "left",
+        "right",
+        "both"
+      ]
     },
     "primaryPosition": {
       "type": "enumeration",
       "required": false,
-      "enum": ["GK", "CB", "LB", "RB", "CDM", "CM", "CAM", "LW", "RW", "ST"]
+      "enum": [
+        "GK",
+        "CB",
+        "LB",
+        "RB",
+        "CDM",
+        "CM",
+        "LM",
+        "RM",
+        "CAM",
+        "LW",
+        "RW",
+        "ST",
+        "CF"
+      ]
     },
     "secondaryPositions": {
       "type": "enumeration",
-      "enum": ["GK", "CB", "LB", "RB", "CDM", "CM", "CAM", "LW", "RW", "ST"]
+      "enum": [
+        "GK",
+        "CB",
+        "LB",
+        "RB",
+        "CDM",
+        "CM",
+        "LM",
+        "RM",
+        "CAM",
+        "LW",
+        "RW",
+        "ST",
+        "CF"
+      ]
     },
     "experienceLevel": {
       "type": "enumeration",
       "required": false,
-      "enum": ["youth", "amateur", "semi-pro", "pro"]
+      "enum": [
+        "youth",
+        "amateur",
+        "semi-pro",
+        "pro"
+      ]
     },
     "currentClub": {
       "type": "string"
@@ -70,12 +107,18 @@
     "profilePhoto": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "visibility": {
       "type": "enumeration",
       "default": "clubs-only",
-      "enum": ["public", "clubs-only", "private"]
+      "enum": [
+        "public",
+        "clubs-only",
+        "private"
+      ]
     },
     "formerClubs": {
       "type": "json"
