@@ -628,6 +628,10 @@ export interface ApiRecruitmentPostRecruitmentPost
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     deadline: Schema.Attribute.Date;
+    interestedPlayers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::player-profile.player-profile'
+    >;
     level: Schema.Attribute.Enumeration<
       ['youth', 'amateur', 'semi-pro', 'pro']
     >;

@@ -64,6 +64,11 @@
     },
     "requirements": {
       "type": "text"
+    },
+    "interestedPlayers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::player-profile.player-profile"
     }
   }
 }
