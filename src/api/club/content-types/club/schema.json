@@ -34,18 +34,12 @@
     "level": {
       "type": "enumeration",
       "required": false,
-      "enum": [
-        "amateur",
-        "semi-pro",
-        "pro"
-      ]
+      "enum": ["amateur", "semi-pro", "pro"]
     },
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "website": {
       "type": "string"
@@ -59,6 +53,12 @@
     "verified": {
       "type": "boolean",
       "default": false
+    },
+    "recruitmentPosts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::recruitment-post.recruitment-post",
+      "mappedBy": "club"
     }
   }
 }

@@ -457,6 +457,10 @@ export interface ApiClubClub extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
+    recruitmentPosts: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::recruitment-post.recruitment-post'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -598,6 +602,68 @@ export interface ApiPlayerProfilePlayerProfile
         },
         number
       >;
+  };
+}
+
+export interface ApiRecruitmentPostRecruitmentPost
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'recruitment_posts';
+  info: {
+    description: 'Club recruitment post for player positions';
+    displayName: 'Recruitment Post';
+    pluralName: 'recruitment-posts';
+    singularName: 'recruitment-post';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    club: Schema.Attribute.Relation<'manyToOne', 'api::club.club'> &
+      Schema.Attribute.Required;
+    contractType: Schema.Attribute.Enumeration<
+      ['trial', 'short-term', 'full-season', 'permanent']
+    > &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    deadline: Schema.Attribute.Date;
+    level: Schema.Attribute.Enumeration<
+      ['youth', 'amateur', 'semi-pro', 'pro']
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::recruitment-post.recruitment-post'
+    > &
+      Schema.Attribute.Private;
+    note: Schema.Attribute.Text;
+    position: Schema.Attribute.Enumeration<
+      [
+        'GK',
+        'CB',
+        'LB',
+        'RB',
+        'CDM',
+        'CM',
+        'LM',
+        'RM',
+        'CAM',
+        'LW',
+        'RW',
+        'ST',
+        'CF',
+      ]
+    > &
+      Schema.Attribute.Required;
+    postStatus: Schema.Attribute.Enumeration<['open', 'paused', 'closed']> &
+      Schema.Attribute.DefaultTo<'open'>;
+    publishedAt: Schema.Attribute.DateTime;
+    requirements: Schema.Attribute.Text;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1172,6 +1238,7 @@ declare module '@strapi/strapi' {
       'api::club.club': ApiClubClub;
       'api::config.config': ApiConfigConfig;
       'api::player-profile.player-profile': ApiPlayerProfilePlayerProfile;
+      'api::recruitment-post.recruitment-post': ApiRecruitmentPostRecruitmentPost;
       'api::subscription.subscription': ApiSubscriptionSubscription;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

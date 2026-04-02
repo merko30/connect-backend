@@ -25,7 +25,7 @@ export default factories.createCoreController(
           return ctx.badRequest("User not authenticated");
         }
 
-        const { priceId, successUrl, cancelUrl } = ctx.request.body || {};
+        const { priceId, cancelUrl } = ctx.request.body || {};
 
         const user = await strapi
           .query("plugin::users-permissions.user")
@@ -74,11 +74,8 @@ export default factories.createCoreController(
           });
         }
 
-        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5174";
-        const resolvedSuccessUrl =
-          successUrl ||
-          `${frontendUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
-        console.log({ successUrl });
+        const frontendUrl = process.env.FRONTEND_URL;
+        const resolvedSuccessUrl = `${frontendUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
         const resolvedCancelUrl = cancelUrl || `${frontendUrl}/payment/cancel`;
 
         const session = await stripeClient.checkout.sessions.create({
