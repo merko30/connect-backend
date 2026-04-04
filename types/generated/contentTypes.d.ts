@@ -703,9 +703,9 @@ export interface ApiRecruitmentPostRecruitmentPost
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     deadline: Schema.Attribute.Date;
-    interestedPlayers: Schema.Attribute.Relation<
+    interested: Schema.Attribute.Relation<
       'manyToMany',
-      'api::player-profile.player-profile'
+      'plugin::users-permissions.user'
     >;
     level: Schema.Attribute.Enumeration<
       ['youth', 'amateur', 'semi-pro', 'pro']

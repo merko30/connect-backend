@@ -20,24 +20,13 @@ export default factories.createCoreController(
           return ctx.badRequest("Invalid recruitment post id");
         }
 
-        const playerProfile = await strapi
-          .query("api::player-profile.player-profile")
-          .findOne({
-            where: { user: userId },
-            select: ["id"],
-          });
-
-        if (!playerProfile) {
-          return ctx.notFound("Player profile not found");
-        }
-
         const post = await strapi
           .query("api::recruitment-post.recruitment-post")
           .findOne({
             where: { id: postId },
             select: ["id", "postStatus"],
             populate: {
-              interestedPlayers: {
+              interested: {
                 select: ["id"],
               },
             },
@@ -51,19 +40,17 @@ export default factories.createCoreController(
           return ctx.badRequest("Recruitment post is not open");
         }
 
-        const interestedPlayerIds = (post.interestedPlayers || []).map(
-          (player: any) => player.id,
+        const interestedUserIds = (post.interested || []).map(
+          (user: any) => user.id,
         );
 
-        const alreadyInterested = interestedPlayerIds.includes(
-          playerProfile.id,
-        );
+        const alreadyInterested = interestedUserIds.includes(userId);
 
         if (!alreadyInterested) {
           await strapi.query("api::recruitment-post.recruitment-post").update({
             where: { id: postId },
             data: {
-              interestedPlayers: [...interestedPlayerIds, playerProfile.id],
+              interested: [...interestedUserIds, userId],
             },
           });
         }
@@ -73,7 +60,7 @@ export default factories.createCoreController(
           interested: true,
           alreadyInterested,
           postId,
-          playerProfileId: playerProfile.id,
+          userId,
         });
       } catch (err: any) {
         strapi.log.error("Add interest error:", err);
@@ -94,24 +81,13 @@ export default factories.createCoreController(
           return ctx.badRequest("Invalid recruitment post id");
         }
 
-        const playerProfile = await strapi
-          .query("api::player-profile.player-profile")
-          .findOne({
-            where: { user: userId },
-            select: ["id"],
-          });
-
-        if (!playerProfile) {
-          return ctx.notFound("Player profile not found");
-        }
-
         const post = await strapi
           .query("api::recruitment-post.recruitment-post")
           .findOne({
             where: { id: postId },
             select: ["id"],
             populate: {
-              interestedPlayers: {
+              interested: {
                 select: ["id"],
               },
             },
@@ -121,18 +97,18 @@ export default factories.createCoreController(
           return ctx.notFound("Recruitment post not found");
         }
 
-        const interestedPlayerIds = (post.interestedPlayers || []).map(
-          (player: any) => player.id,
+        const interestedUserIds = (post.interested || []).map(
+          (user: any) => user.id,
         );
 
-        const wasInterested = interestedPlayerIds.includes(playerProfile.id);
+        const wasInterested = interestedUserIds.includes(userId);
 
         if (wasInterested) {
           await strapi.query("api::recruitment-post.recruitment-post").update({
             where: { id: postId },
             data: {
-              interestedPlayers: interestedPlayerIds.filter(
-                (id: number) => id !== playerProfile.id,
+              interested: interestedUserIds.filter(
+                (id: number) => id !== userId,
               ),
             },
           });
@@ -143,7 +119,7 @@ export default factories.createCoreController(
           interested: false,
           wasInterested,
           postId,
-          playerProfileId: playerProfile.id,
+          userId,
         });
       } catch (err: any) {
         strapi.log.error("Remove interest error:", err);

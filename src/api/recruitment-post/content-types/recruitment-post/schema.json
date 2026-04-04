@@ -16,10 +16,6 @@
       "type": "string",
       "required": true
     },
-    "title": {
-      "type": "string",
-      "required": true
-    },
     "type": {
       "type": "enumeration",
       "required": true,
@@ -78,10 +74,10 @@
     "requirements": {
       "type": "text"
     },
-    "interestedPlayers": {
+    "interested": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::player-profile.player-profile"
+      "target": "plugin::users-permissions.user"
     }
   }
 }
