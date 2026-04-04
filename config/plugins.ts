@@ -8,6 +8,7 @@ export default () => ({
           "clubName",
           "contactPhone",
           "role",
+          "coachType",
         ],
       },
     },

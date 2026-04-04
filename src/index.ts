@@ -1,7 +1,8 @@
 import { Core } from "@strapi/strapi";
 
 const PLAYER_ROLE_ID = 3;
-const COACH_ROLE_ID = 4;
+const CLUB_STAFF_ROLE_ID = 4;
+const COACH_ROLE_ID = 5;
 
 export default {
   /**
@@ -24,45 +25,65 @@ export default {
         };
 
         const isPlayer = ctx.request.body.role === PLAYER_ROLE_ID;
+        const isClubStaff = ctx.request.body.role === CLUB_STAFF_ROLE_ID;
         const isCoach = ctx.request.body.role === COACH_ROLE_ID;
 
-        await strapi.documents("plugin::users-permissions.user").update({
-          documentId: user.documentId,
-          data: {
-            role: ctx.request.body.role,
-          },
-        });
+        try {
+          await strapi.documents("plugin::users-permissions.user").update({
+            documentId: user.documentId,
+            data: {
+              role: ctx.request.body.role,
+            },
+          });
 
-        const { firstName, lastName } = ctx.request.body;
-        if (isPlayer) {
-          await strapi.documents("api::player-profile.player-profile").create({
-            data: {
-              user: user.id,
-              firstName,
-              lastName,
-            },
-          });
-        } else if (isCoach) {
-          const { clubName, contactPhone, email } = ctx.request.body;
-          await strapi.documents("api::club.club").create({
-            data: {
-              user: user.id,
-              clubName,
-              contactPhone,
-              contactEmail: email,
-            },
-          });
+          const { firstName, lastName } = ctx.request.body;
+          if (isPlayer) {
+            await strapi
+              .documents("api::player-profile.player-profile")
+              .create({
+                data: {
+                  user: user.id,
+                  firstName,
+                  lastName,
+                },
+              });
+          } else if (isClubStaff) {
+            const { clubName, contactPhone, email } = ctx.request.body;
+            await strapi.documents("api::club.club").create({
+              data: {
+                user: user.id,
+                clubName,
+                contactPhone,
+                contactEmail: email,
+              },
+            });
+          } else if (isCoach) {
+            await strapi.documents("api::coach-profile.coach-profile").create({
+              data: {
+                user: user.id,
+                firstName,
+                lastName,
+                coachType: ctx.request.body.coachType,
+              },
+            });
+          }
+
+          const jwt = strapi
+            .plugin("users-permissions")
+            .service("jwt")
+            .issue({ id: user.id });
+
+          ctx.response.body = {
+            jwt,
+            user,
+          };
+        } catch (error) {
+          strapi.log.error("Error during post-registration processing:", error);
+          ctx.throw(
+            500,
+            "An error occurred while processing your registration.",
+          );
         }
-
-        const jwt = strapi
-          .plugin("users-permissions")
-          .service("jwt")
-          .issue({ id: user.id });
-
-        ctx.response.body = {
-          jwt,
-          user,
-        };
       }
     };
   },

@@ -489,6 +489,16 @@ export interface ApiCoachProfileCoachProfile
     availableFrom: Schema.Attribute.Date;
     bio: Schema.Attribute.RichText;
     categories: Schema.Attribute.JSON;
+    coachType: Schema.Attribute.Enumeration<
+      [
+        'head-coach',
+        'assistant-coach',
+        'goalkeeping-coach',
+        'fitness-coach',
+        'analyst',
+      ]
+    > &
+      Schema.Attribute.Required;
     contactEmail: Schema.Attribute.Email;
     contactPhone: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
@@ -516,16 +526,6 @@ export interface ApiCoachProfileCoachProfile
     nationality: Schema.Attribute.String;
     profilePhoto: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
-    role: Schema.Attribute.Enumeration<
-      [
-        'head-coach',
-        'assistant-coach',
-        'goalkeeping-coach',
-        'fitness-coach',
-        'analyst',
-      ]
-    > &
-      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

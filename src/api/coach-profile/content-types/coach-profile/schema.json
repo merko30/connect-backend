@@ -25,7 +25,7 @@
       "type": "string",
       "required": true
     },
-    "role": {
+    "coachType": {
       "type": "enumeration",
       "required": true,
       "enum": [
