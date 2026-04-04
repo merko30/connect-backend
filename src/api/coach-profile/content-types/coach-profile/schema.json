@@ -1,0 +1,96 @@
+{
+  "kind": "collectionType",
+  "collectionName": "coach_profiles",
+  "info": {
+    "singularName": "coach-profile",
+    "pluralName": "coach-profiles",
+    "displayName": "Coach Profile",
+    "description": "Football coach profile"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": true
+    },
+    "role": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "head-coach",
+        "assistant-coach",
+        "goalkeeping-coach",
+        "fitness-coach",
+        "analyst"
+      ]
+    },
+    "licenseLevel": {
+      "type": "enumeration",
+      "enum": ["none", "uefa-c", "uefa-b", "uefa-a", "uefa-pro"]
+    },
+    "experienceLevel": {
+      "type": "enumeration",
+      "enum": ["youth", "amateur", "semi-pro", "pro"]
+    },
+    "categories": {
+      "type": "json"
+    },
+    "currentClub": {
+      "type": "string"
+    },
+    "formerClubs": {
+      "type": "json"
+    },
+    "yearsOfExperience": {
+      "type": "integer",
+      "min": 0
+    },
+    "bio": {
+      "type": "richtext"
+    },
+    "profilePhoto": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "dateOfBirth": {
+      "type": "date"
+    },
+    "location": {
+      "type": "string"
+    },
+    "nationality": {
+      "type": "string"
+    },
+    "contactEmail": {
+      "type": "email"
+    },
+    "contactPhone": {
+      "type": "string"
+    },
+    "isAvailable": {
+      "type": "boolean",
+      "default": true
+    },
+    "availableFrom": {
+      "type": "date"
+    },
+    "visibility": {
+      "type": "enumeration",
+      "default": "clubs-only",
+      "enum": ["public", "clubs-only", "private"]
+    }
+  }
+}

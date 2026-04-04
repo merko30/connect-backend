@@ -16,6 +16,16 @@
       "type": "string",
       "required": true
     },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "default": "player",
+      "enum": ["player", "coach"]
+    },
     "club": {
       "type": "relation",
       "relation": "manyToOne",
@@ -48,6 +58,9 @@
     "level": {
       "type": "enumeration",
       "enum": ["youth", "amateur", "semi-pro", "pro"]
+    },
+    "categories": {
+      "type": "json"
     },
     "postStatus": {
       "type": "enumeration",

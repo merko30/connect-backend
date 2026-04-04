@@ -473,6 +473,80 @@ export interface ApiClubClub extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCoachProfileCoachProfile
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'coach_profiles';
+  info: {
+    description: 'Football coach profile';
+    displayName: 'Coach Profile';
+    pluralName: 'coach-profiles';
+    singularName: 'coach-profile';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    availableFrom: Schema.Attribute.Date;
+    bio: Schema.Attribute.RichText;
+    categories: Schema.Attribute.JSON;
+    contactEmail: Schema.Attribute.Email;
+    contactPhone: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currentClub: Schema.Attribute.String;
+    dateOfBirth: Schema.Attribute.Date;
+    experienceLevel: Schema.Attribute.Enumeration<
+      ['youth', 'amateur', 'semi-pro', 'pro']
+    >;
+    firstName: Schema.Attribute.String & Schema.Attribute.Required;
+    formerClubs: Schema.Attribute.JSON;
+    isAvailable: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    lastName: Schema.Attribute.String & Schema.Attribute.Required;
+    licenseLevel: Schema.Attribute.Enumeration<
+      ['none', 'uefa-c', 'uefa-b', 'uefa-a', 'uefa-pro']
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::coach-profile.coach-profile'
+    > &
+      Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    nationality: Schema.Attribute.String;
+    profilePhoto: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    role: Schema.Attribute.Enumeration<
+      [
+        'head-coach',
+        'assistant-coach',
+        'goalkeeping-coach',
+        'fitness-coach',
+        'analyst',
+      ]
+    > &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+    visibility: Schema.Attribute.Enumeration<
+      ['public', 'clubs-only', 'private']
+    > &
+      Schema.Attribute.DefaultTo<'clubs-only'>;
+    yearsOfExperience: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+  };
+}
+
 export interface ApiConfigConfig extends Struct.CollectionTypeSchema {
   collectionName: 'configs';
   info: {
@@ -618,6 +692,7 @@ export interface ApiRecruitmentPostRecruitmentPost
     draftAndPublish: true;
   };
   attributes: {
+    categories: Schema.Attribute.JSON;
     club: Schema.Attribute.Relation<'manyToOne', 'api::club.club'> &
       Schema.Attribute.Required;
     contractType: Schema.Attribute.Enumeration<
@@ -665,6 +740,9 @@ export interface ApiRecruitmentPostRecruitmentPost
     publishedAt: Schema.Attribute.DateTime;
     requirements: Schema.Attribute.Text;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+    type: Schema.Attribute.Enumeration<['player', 'coach']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'player'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1240,6 +1318,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::club.club': ApiClubClub;
+      'api::coach-profile.coach-profile': ApiCoachProfileCoachProfile;
       'api::config.config': ApiConfigConfig;
       'api::player-profile.player-profile': ApiPlayerProfilePlayerProfile;
       'api::recruitment-post.recruitment-post': ApiRecruitmentPostRecruitmentPost;
