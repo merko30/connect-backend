@@ -34,12 +34,18 @@
     "level": {
       "type": "enumeration",
       "required": false,
-      "enum": ["amateur", "semi-pro", "pro"]
+      "enum": [
+        "amateur",
+        "semi-pro",
+        "pro"
+      ]
     },
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "website": {
       "type": "string"

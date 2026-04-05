@@ -5,7 +5,7 @@
     "singularName": "recruitment-post",
     "pluralName": "recruitment-posts",
     "displayName": "Recruitment Post",
-    "description": "Club recruitment post for player positions"
+    "description": "Club recruitment post for player or coach roles"
   },
   "options": {
     "draftAndPublish": true
@@ -26,12 +26,11 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::club.club",
-      "inversedBy": "recruitmentPosts",
-      "required": true
+      "inversedBy": "recruitmentPosts"
     },
     "position": {
       "type": "enumeration",
-      "required": true,
+      "required": false,
       "enum": [
         "GK",
         "CB",
@@ -48,15 +47,28 @@
         "CF"
       ]
     },
+    "coachType": {
+      "type": "enumeration",
+      "required": false,
+      "enum": [
+        "head-coach",
+        "assistant-coach",
+        "goalkeeping-coach",
+        "fitness-coach",
+        "analyst"
+      ]
+    },
     "note": {
       "type": "text"
     },
     "level": {
       "type": "enumeration",
+      "required": false,
       "enum": ["youth", "amateur", "semi-pro", "pro"]
     },
     "categories": {
-      "type": "json"
+      "type": "json",
+      "required": false
     },
     "postStatus": {
       "type": "enumeration",

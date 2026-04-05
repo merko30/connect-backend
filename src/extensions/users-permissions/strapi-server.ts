@@ -26,7 +26,15 @@ export default (plugin) => {
       },
     });
 
-    return { ...userWithRole, player, club };
+    const coach = await strapi
+      .documents("api::coach-profile.coach-profile")
+      .findFirst({
+        filters: {
+          user: { id: userWithRole.id },
+        },
+      });
+
+    return { ...userWithRole, player, club, coach };
   };
 
   return plugin;

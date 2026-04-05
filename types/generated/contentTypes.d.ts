@@ -683,7 +683,7 @@ export interface ApiRecruitmentPostRecruitmentPost
   extends Struct.CollectionTypeSchema {
   collectionName: 'recruitment_posts';
   info: {
-    description: 'Club recruitment post for player positions';
+    description: 'Club recruitment post for player or coach roles';
     displayName: 'Recruitment Post';
     pluralName: 'recruitment-posts';
     singularName: 'recruitment-post';
@@ -693,8 +693,16 @@ export interface ApiRecruitmentPostRecruitmentPost
   };
   attributes: {
     categories: Schema.Attribute.JSON;
-    club: Schema.Attribute.Relation<'manyToOne', 'api::club.club'> &
-      Schema.Attribute.Required;
+    club: Schema.Attribute.Relation<'manyToOne', 'api::club.club'>;
+    coachType: Schema.Attribute.Enumeration<
+      [
+        'head-coach',
+        'assistant-coach',
+        'goalkeeping-coach',
+        'fitness-coach',
+        'analyst',
+      ]
+    >;
     contractType: Schema.Attribute.Enumeration<
       ['trial', 'short-term', 'full-season', 'permanent']
     > &
@@ -733,8 +741,7 @@ export interface ApiRecruitmentPostRecruitmentPost
         'ST',
         'CF',
       ]
-    > &
-      Schema.Attribute.Required;
+    >;
     postStatus: Schema.Attribute.Enumeration<['open', 'paused', 'closed']> &
       Schema.Attribute.DefaultTo<'open'>;
     publishedAt: Schema.Attribute.DateTime;
