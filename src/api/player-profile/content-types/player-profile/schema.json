@@ -15,7 +15,8 @@
     "user": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "plugin::users-permissions.user"
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "playerProfile"
     },
     "firstName": {
       "type": "string",
@@ -38,11 +39,7 @@
     "preferredFoot": {
       "type": "enumeration",
       "default": "right",
-      "enum": [
-        "left",
-        "right",
-        "both"
-      ]
+      "enum": ["left", "right", "both"]
     },
     "primaryPosition": {
       "type": "enumeration",
@@ -84,12 +81,7 @@
     "experienceLevel": {
       "type": "enumeration",
       "required": false,
-      "enum": [
-        "youth",
-        "amateur",
-        "semi-pro",
-        "pro"
-      ]
+      "enum": ["youth", "amateur", "semi-pro", "pro"]
     },
     "currentClub": {
       "type": "string"
@@ -107,18 +99,12 @@
     "profilePhoto": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "visibility": {
       "type": "enumeration",
       "default": "clubs-only",
-      "enum": [
-        "public",
-        "clubs-only",
-        "private"
-      ]
+      "enum": ["public", "clubs-only", "private"]
     },
     "formerClubs": {
       "type": "json"

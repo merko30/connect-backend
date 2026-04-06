@@ -109,6 +109,18 @@
       "relation": "oneToOne",
       "target": "api::subscription.subscription",
       "inversedBy": "user"
+    },
+    "playerProfile": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::player-profile.player-profile",
+      "mappedBy": "user"
+    },
+    "coachProfile": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::coach-profile.coach-profile",
+      "mappedBy": "user"
     }
   }
 }

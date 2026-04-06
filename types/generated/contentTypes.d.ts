@@ -1256,6 +1256,10 @@ export interface PluginUsersPermissionsUser
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     citizenship: Schema.Attribute.String;
+    coachProfile: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::coach-profile.coach-profile'
+    >;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
@@ -1284,6 +1288,10 @@ export interface PluginUsersPermissionsUser
         minLength: 6;
       }>;
     phoneNumber: Schema.Attribute.String;
+    playerProfile: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::player-profile.player-profile'
+    >;
     priceId: Schema.Attribute.String;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
