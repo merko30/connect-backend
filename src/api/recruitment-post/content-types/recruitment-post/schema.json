@@ -8,7 +8,7 @@
     "description": "Club recruitment post for player or coach roles"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {

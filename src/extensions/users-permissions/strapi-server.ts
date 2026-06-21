@@ -9,7 +9,7 @@ export default (plugin) => {
       .documents("plugin::users-permissions.user")
       .findFirst({
         filters: { id: user.id },
-        populate: ["role"],
+        populate: ["role", "profilePhoto"],
       });
 
     const player = await strapi
@@ -36,6 +36,5 @@ export default (plugin) => {
 
     return { ...userWithRole, player, club, coach };
   };
-
   return plugin;
 };

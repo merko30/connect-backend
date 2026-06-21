@@ -39,11 +39,22 @@
     },
     "licenseLevel": {
       "type": "enumeration",
-      "enum": ["none", "uefa-c", "uefa-b", "uefa-a", "uefa-pro"]
+      "enum": [
+        "none",
+        "uefa-c",
+        "uefa-b",
+        "uefa-a",
+        "uefa-pro"
+      ]
     },
     "experienceLevel": {
       "type": "enumeration",
-      "enum": ["youth", "amateur", "semi-pro", "pro"]
+      "enum": [
+        "youth",
+        "amateur",
+        "semi-pro",
+        "pro"
+      ]
     },
     "categories": {
       "type": "json"
@@ -64,7 +75,9 @@
     "profilePhoto": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "dateOfBirth": {
       "type": "date"
@@ -91,7 +104,11 @@
     "visibility": {
       "type": "enumeration",
       "default": "clubs-only",
-      "enum": ["public", "clubs-only", "private"]
+      "enum": [
+        "public",
+        "clubs-only",
+        "private"
+      ]
     }
   }
 }

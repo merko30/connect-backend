@@ -439,7 +439,7 @@ export interface ApiClubClub extends Struct.CollectionTypeSchema {
     singularName: 'club';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     city: Schema.Attribute.String;
@@ -640,23 +640,7 @@ export interface ApiPlayerProfilePlayerProfile
     >;
     profilePhoto: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
-    secondaryPositions: Schema.Attribute.Enumeration<
-      [
-        'GK',
-        'CB',
-        'LB',
-        'RB',
-        'CDM',
-        'CM',
-        'LM',
-        'RM',
-        'CAM',
-        'LW',
-        'RW',
-        'ST',
-        'CF',
-      ]
-    >;
+    secondaryPositions: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -689,7 +673,7 @@ export interface ApiRecruitmentPostRecruitmentPost
     singularName: 'recruitment-post';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     categories: Schema.Attribute.JSON;
@@ -1293,6 +1277,7 @@ export interface PluginUsersPermissionsUser
       'api::player-profile.player-profile'
     >;
     priceId: Schema.Attribute.String;
+    profilePhoto: Schema.Attribute.Media<'images' | 'files'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;

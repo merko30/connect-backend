@@ -89,7 +89,13 @@
     },
     "subscriptionStatus": {
       "type": "enumeration",
-      "enum": ["trialing", "active", "past_due", "canceled", "incomplete"]
+      "enum": [
+        "trialing",
+        "active",
+        "past_due",
+        "canceled",
+        "incomplete"
+      ]
     },
     "subscriptionId": {
       "type": "string"
@@ -121,6 +127,14 @@
       "relation": "oneToOne",
       "target": "api::coach-profile.coach-profile",
       "mappedBy": "user"
+    },
+    "profilePhoto": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
     }
   }
 }
