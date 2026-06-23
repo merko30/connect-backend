@@ -20,7 +20,10 @@
       "type": "enumeration",
       "required": true,
       "default": "player",
-      "enum": ["player", "coach"]
+      "enum": [
+        "player",
+        "coach"
+      ]
     },
     "club": {
       "type": "relation",
@@ -64,7 +67,12 @@
     "level": {
       "type": "enumeration",
       "required": false,
-      "enum": ["youth", "amateur", "semi-pro", "pro"]
+      "enum": [
+        "youth",
+        "amateur",
+        "semi-pro",
+        "pro"
+      ]
     },
     "categories": {
       "type": "json",
@@ -73,7 +81,11 @@
     "postStatus": {
       "type": "enumeration",
       "default": "open",
-      "enum": ["open", "paused", "closed"]
+      "enum": [
+        "open",
+        "paused",
+        "closed"
+      ]
     },
     "deadline": {
       "type": "date"
@@ -81,7 +93,12 @@
     "contractType": {
       "type": "enumeration",
       "required": true,
-      "enum": ["trial", "short-term", "full-season", "permanent"]
+      "enum": [
+        "trial",
+        "short-term",
+        "full-season",
+        "permanent"
+      ]
     },
     "requirements": {
       "type": "text"

@@ -619,6 +619,7 @@ export interface ApiPlayerProfilePlayerProfile
       'api::player-profile.player-profile'
     > &
       Schema.Attribute.Private;
+    mediaLinks: Schema.Attribute.JSON;
     preferredFoot: Schema.Attribute.Enumeration<['left', 'right', 'both']> &
       Schema.Attribute.DefaultTo<'right'>;
     primaryPosition: Schema.Attribute.Enumeration<
