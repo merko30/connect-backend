@@ -2,6 +2,8 @@ export default (plugin) => {
   plugin.controllers.user.me = async (ctx) => {
     const user = ctx.state.user;
 
+    console.log(user);
+
     if (!user) return ctx.unauthorized();
 
     // Populate role
@@ -9,7 +11,7 @@ export default (plugin) => {
       .documents("plugin::users-permissions.user")
       .findFirst({
         filters: { id: user.id },
-        populate: ["role", "profilePhoto"],
+        populate: ["role"],
       });
 
     const player = await strapi
@@ -18,12 +20,14 @@ export default (plugin) => {
         filters: {
           user: { id: userWithRole.id },
         },
+        populate: ["profilePhoto"],
       });
 
     const club = await strapi.documents("api::club.club").findFirst({
       filters: {
         user: { id: userWithRole.id },
       },
+      populate: ["logo"],
     });
 
     const coach = await strapi
@@ -32,6 +36,7 @@ export default (plugin) => {
         filters: {
           user: { id: userWithRole.id },
         },
+        populate: ["profilePhoto"],
       });
 
     return { ...userWithRole, player, club, coach };
